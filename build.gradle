@@ -18,10 +18,4 @@ test {
     useJUnitPlatform()
 }
  
-sonar {
-    properties {
-        property 'sonar.projectKey', 'ottbackend'
-        property 'sonar.projectName', 'ottbackend'
-        property 'sonar.host.url', 'http://localhost:9000'
-    }
-}
+
