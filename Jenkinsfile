@@ -50,7 +50,10 @@ pipeline {
 
         stage('Deploy with Ansible') {
             steps {
-                bat 'ansible-playbook ansible/deploy.yml'
+                bat '''
+                cd ansible
+                ansible-playbook ansible/deploy.yml
+                '''
             }
         }
     }
