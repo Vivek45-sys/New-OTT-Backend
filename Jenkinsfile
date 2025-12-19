@@ -26,14 +26,22 @@ pipeline {
                 bat 'gradle build'
             }
         }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    bat 'gradle sonar'
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Build successful!'
+            echo '✅ Build & SonarQube analysis successful!'
         }
         failure {
-            echo '❌ Build failed!'
+            echo '❌ Pipeline failed!'
         }
     }
 }
