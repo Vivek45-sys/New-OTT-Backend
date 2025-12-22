@@ -1,0 +1,19 @@
+- name: Deploy app on local Windows
+  hosts: local
+  tasks:
+
+    - name: Create app directory
+      file:
+        path: C:\apps\OTTbackend_CI
+        state: directory
+
+    - name: Copy JAR from Jenkins workspace
+      copy:
+        src: build/libs/ott-backend.jar
+        dest: C:\apps\OTTbackend_CI\OTTbackend_CI.jar
+
+    - name: Run application
+      shell: |
+        java -jar C:\apps\OTTbackend_CI\OTTbackend_CI.jar
+      async: 30
+      poll: 0
