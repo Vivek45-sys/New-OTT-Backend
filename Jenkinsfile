@@ -8,41 +8,28 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Vivek45-sys/New-OTT-Backend.git'
+                checkout scm
             }
         }
 
-        stage('Gradle Clean') {
+        stage('Build') {
             steps {
-                bat 'gradle clean'
+                bat 'gradle clean build'
             }
         }
 
-        stage('Build & Test') {
+        stage('Deploy') {
             steps {
-                bat 'gradle build'
+                bat '''
+                echo Deploying application...
+                mkdir C:\\apps\\ott-backend 2>nul
+                copy /Y build\\libs\\*.jar C:\\apps\\ott-backend\\ott-backend.jar
+                start "" java -jar C:\\apps\\ott-backend\\ott-backend.jar
+                '''
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('LocalSonar') {
-                    bat 'gradle sonar'
-                }
-            }
-        }
-
-
-
-    post {
-        success {
-            echo '✅ CI/CD Pipeline Successful!'
-        }
-        failure {
-            echo '❌ Pipeline Failed!'
-        }
     }
 }
