@@ -28,7 +28,15 @@ pipeline {
                 copy /Y build\\libs\\*.jar C:\\apps\\ott-backend\\ott-backend.jar
                 start "" java -jar C:\\apps\\ott-backend\\ott-backend.jar
                 '''
+                
             }
+
+            stage('Health Check') {
+    steps {
+        bat 'curl http://localhost:3001/metrics'
+    }
+}
+
         }
 
     }
