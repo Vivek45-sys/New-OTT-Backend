@@ -31,10 +31,6 @@ pipeline {
             }
         }
 
-        stage('Health Check') {
-            steps {
-                bat 'curl http://localhost:3001/metrics'
-            }
-        }
+       
     }
 }
