@@ -24,20 +24,17 @@ pipeline {
             steps {
                 bat '''
                 echo Deploying application...
-                mkdir C:\\apps\\ott-backend 2>nul
+                if not exist C:\\apps\\ott-backend mkdir C:\\apps\\ott-backend
                 copy /Y build\\libs\\*.jar C:\\apps\\ott-backend\\ott-backend.jar
                 start "" java -jar C:\\apps\\ott-backend\\ott-backend.jar
                 '''
-                
             }
-
-            stage('Health Check') {
-    steps {
-        bat 'curl http://localhost:3001/metrics'
-    }
-}
-
         }
 
+        stage('Health Check') {
+            steps {
+                bat 'curl http://localhost:3001/metrics'
+            }
+        }
     }
 }
