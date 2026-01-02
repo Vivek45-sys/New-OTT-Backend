@@ -9,6 +9,7 @@ pipeline {
     environment {
         SONAR_PROJECT_KEY  = 'ott-backend'
         SONAR_PROJECT_NAME = 'ott-backend'
+        ANSIBLE_PLAYBOOK   = 'ansible/deploy.yml'
     }
 
     stages {
@@ -43,14 +44,16 @@ pipeline {
 
      
 
-        stage('Deploy') {
-            steps {
-                bat '''
-                echo Copying JAR to C:\
-                copy /Y build\\libs\\*.jar C:\\
-                '''
-            }
-        }
+  stage('Deploy with Ansible') {
+    steps {
+        bat '''
+        echo Running Ansible Deployment...
+        wsl ansible-playbook %ANSIBLE_PLAYBOOK% -i ansible/inventory.ini ^
+        --extra-vars "workspace=%WORKSPACE%"
+        '''
+    }
+}
+
     }
 
     post {
