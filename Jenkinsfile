@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        SONAR_AUTH_TOKEN = credentials('sonar-token')
+        SONAR_AUTH_TOKEN = credentials('sonarqube-token')
     }
 
     stages {
