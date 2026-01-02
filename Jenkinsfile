@@ -6,6 +6,10 @@ pipeline {
         gradle 'Gradle'
     }
 
+    environment {
+        SONAR_AUTH_TOKEN = credentials('Local sonar')
+    }
+
     stages {
 
         stage('Checkout') {
@@ -20,6 +24,18 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                bat '''
+                gradle sonar ^
+                  -Dsonar.projectKey=ott-backend ^
+                  -Dsonar.projectName=ott-backend ^
+                  -Dsonar.host.url=http://localhost:9000 ^
+                  -Dsonar.token=%SONAR_AUTH_TOKEN%
+                '''
+            }
+        }
+
         stage('Deploy') {
             steps {
                 bat '''
@@ -30,7 +46,5 @@ pipeline {
                 '''
             }
         }
-
-       
     }
 }
