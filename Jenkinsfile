@@ -76,20 +76,15 @@ stage('Quality Gate') {
 
 
        stage('Deploy') {
-
-           steps {
-
-               bat '''
-
-               echo Deploying application...
-
-               mkdir C:\\\\apps\\\\ott-backend 2>nul
-
-               copy /Y build\\\\libs\\\\\*.jar C:\\\\apps\\\\ott-backend\\\\ott-backend.jar
-
-               start "" java -jar C:\\\\apps\\\\ott-backend\\\\ott-backend.jar
-
-               '''
+    steps {
+        bat '''
+        echo Deploying application...
+        if not exist C:\\apps\\ott-backend mkdir C:\\apps\\ott-backend
+        copy /Y build\\libs\\*.jar C:\\apps\\ott-backend\\ott-backend.jar
+        start "" java -jar C:\\apps\\ott-backend\\ott-backend.jar
+        '''
+    }
+}
 
            }
 
