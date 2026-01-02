@@ -79,20 +79,11 @@ pipeline {
 
 
        stage('Deploy') {
-
-           steps {
-
-               bat '''
-
-               echo Deploying application...
-
-               mkdir C:\\\\apps\\\\ott-backend 2>nul
-
-               copy /Y build\\\\libs\\\\\*.jar C:\\\\apps\\\\ott-backend\\\\ott-backend.jar
-
-               start "" java -jar C:\\\\apps\\\\ott-backend\\\\ott-backend.jar
-
-               '''
+    steps {
+        bat 'copy /Y build/libs/*.jar C:/'
+        bat 'java -jar C:/ott-backend.jar'
+    }
+}
 
            }
 
