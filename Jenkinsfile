@@ -16,7 +16,7 @@ pipeline {
 
    environment {
 
-       SONAR_AUTH_TOKEN = credentials('SonarQube')
+       SONAR_AUTH_TOKEN = credentials('sonarqube-token')
 
    }
 
@@ -50,23 +50,18 @@ pipeline {
 
 
 
-       stage('SonarQube Analysis') {
-
-           steps {
-
-               withSonarQubeEnv('SonarQube') {
-
-                   bat '''
-
-                   gradle sonar ^
-
-                     -Dsonar.projectKey=ott-backend ^
-
-                     -Dsonar.projectName=ott-backend ^
-
-                     -Dsonar.host.url=http://localhost:9000 ^
-
-                     -Dsonar.login=%SONAR\_AUTH\_TOKEN%
+      stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv('SonarQube') {
+            bat '''
+            gradle sonar ^
+              -Dsonar.projectKey=ott-backend ^
+              -Dsonar.projectName=ott-backend ^
+              -Dsonar.login=%SONAR_AUTH_TOKEN%
+            '''
+        }
+    }
+}
 
                    '''
 stage('Quality Gate') {
