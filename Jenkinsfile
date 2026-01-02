@@ -7,7 +7,8 @@ pipeline {
     }
 
     environment {
-        SONAR_AUTH_TOKEN = credentials('sonarqube-token')
+        SONAR_PROJECT_KEY  = 'ott-backend'
+        SONAR_PROJECT_NAME = 'ott-backend'
     }
 
     stages {
@@ -27,26 +28,43 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat '''
-                    gradle sonarqube ^
-                      -Dsonar.projectKey=ott-backend ^
-                      -Dsonar.projectName=ott-backend ^
-                      -Dsonar.login=%SONAR_AUTH_TOKEN%
-                    '''
+                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_AUTH_TOKEN')]) {
+                        bat '''
+                        gradle sonar ^
+                          -Dsonar.projectKey=%SONAR_PROJECT_KEY% ^
+                          -Dsonar.projectName=%SONAR_PROJECT_NAME% ^
+                          -Dsonar.token=%SONAR_AUTH_TOKEN% ^
+                          -Dsonar.gradle.skipCompile=true
+                        '''
+                    }
                 }
             }
         }
 
-       
-                
-            
-        
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
 
         stage('Deploy') {
             steps {
-                bat 'copy /Y build/libs/*.jar C:/app.jar'
-                bat 'java -jar C:/app.jar'
+                bat '''
+                echo Copying JAR to C:\
+                copy /Y build\\libs\\*.jar C:\\
+                '''
             }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ CI/CD Pipeline completed successfully'
+        }
+        failure {
+            echo '❌ Pipeline failed – check logs above'
         }
     }
 }
