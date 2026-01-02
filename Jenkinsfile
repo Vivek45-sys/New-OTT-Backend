@@ -11,7 +11,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -27,12 +26,13 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat '''
-                    gradle sonar ^
-                      -Dsonar.projectKey=ott-backend ^
-                      -Dsonar.projectName=ott-backend ^
-                      -Dsonar.login=%SONAR_AUTH_TOKEN%
-                    '''
+                    bat """
+                        gradle sonarqube ^
+                          -Dsonar.projectKey=ott-backend ^
+                          -Dsonar.projectName=ott-backend ^
+                          -Dsonar.host.url=http://localhost:9000 ^
+                          -Dsonar.login=${env.SONAR_AUTH_TOKEN}
+                    """
                 }
             }
         }
@@ -47,12 +47,12 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                bat '''
-                echo Deploying application...
-                if not exist C:\\apps\\ott-backend mkdir C:\\apps\\ott-backend
-                copy /Y build\\libs\\*.jar C:\\apps\\ott-backend\\ott-backend.jar
-                start "" java -jar C:\\apps\\ott-backend\\ott-backend.jar
-                '''
+                bat """
+                    echo Deploying application...
+                    mkdir C:\\apps\\ott-backend 2>nul
+                    copy /Y build\\libs\\*.jar C:\\apps\\ott-backend\\ott-backend.jar
+                    start "" java -jar C:\\apps\\ott-backend\\ott-backend.jar
+                """
             }
         }
     }
