@@ -1,65 +1,105 @@
 pipeline {
-    agent any
 
-    tools {
-        jdk 'JDK17'
-        gradle 'Gradle'
+   agent any
+
+
+
+   tools {
+
+       jdk 'JDK-17'
+
+       gradle 'Gradle'
+
+   }
+
+
+
+   environment {
+
+       SONAR_AUTH_TOKEN = credentials('SonarQube')
+
+   }
+
+
+
+   stages {
+
+
+
+       stage('Checkout') {
+
+           steps {
+
+               checkout scm
+
+           }
+
+       }
+
+
+
+       stage('Build') {
+
+           steps {
+
+               bat 'gradle clean build'
+
+           }
+
+       }
+
+
+
+       stage('SonarQube Analysis') {
+
+           steps {
+
+               withSonarQubeEnv('SonarQube') {
+
+                   bat '''
+
+                   gradle sonar ^
+
+                     -Dsonar.projectKey=ott-backend ^
+
+                     -Dsonar.projectName=ott-backend ^
+
+                     -Dsonar.host.url=http://localhost:9000 ^
+
+                     -Dsonar.login=%SONAR\_AUTH\_TOKEN%
+
+                   '''
+stage('Quality Gate') {
+    steps {
+        timeout(time: 1, unit: 'MINUTES') {
+            waitForQualityGate abortPipeline: true
+        }
     }
+}
 
-    environment {
-        SONAR_AUTH_TOKEN = credentials('SonarQube')
-    }
 
-    stages {
 
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
 
-        stage('Build') {
-            steps {
-                bat 'gradle clean build'
-            }
-        }
+       stage('Deploy') {
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat '''
-                    gradle sonar ^
-                      -Dsonar.projectKey=ott-backend ^
-                      -Dsonar.projectName=ott-backend ^
-                      -Dsonar.host.url=http://localhost:9000 ^
-                      -Dsonar.token=%SONAR_AUTH_TOKEN%
-                    '''
-                }
-            }
-        }
+           steps {
 
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+               bat '''
 
-        stage('Deploy') {
-            steps {
-                bat '''
-                echo Deploying application...
+               echo Deploying application...
 
-                taskkill /F /IM java.exe 2>nul
+               mkdir C:\\\\apps\\\\ott-backend 2>nul
 
-                mkdir C:\\apps\\ott-backend 2>nul
-                copy /Y build\\libs\\*.jar C:\\apps\\ott-backend\\ott-backend.jar
+               copy /Y build\\\\libs\\\\\*.jar C:\\\\apps\\\\ott-backend\\\\ott-backend.jar
 
-                start "" java -jar C:\\apps\\ott-backend\\ott-backend.jar
-                '''
-            }
-        }
+               start "" java -jar C:\\\\apps\\\\ott-backend\\\\ott-backend.jar
 
-    }
+               '''
+
+           }
+
+       }
+
+   }
+
 }
