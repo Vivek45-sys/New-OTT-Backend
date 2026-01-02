@@ -66,7 +66,7 @@ pipeline {
 
                      -Dsonar.host.url=http://localhost:9000 ^
 
-                     -Dsonar.login=%SONAR\_AUTH\_TOKEN%
+                     -Dsonar.login=%SONAR_AUTH_TOKEN%
 
                    '''
 
